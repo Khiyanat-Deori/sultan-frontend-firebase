@@ -1,0 +1,53 @@
+.about-us-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .about-us-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px; 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25),  0 6px 6px rgba(0, 0, 0, 0.22);
+  }
+  
+  .about-us-description {
+    margin-top: 20px;
+  }
+  
+  .about-us-description h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .about-us-description p {
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: justify;
+  }
+  
+  .about-us-awards {
+    margin-top: 30px;
+  }
+  
+  .awards-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .awards-images img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px; 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25),  0 6px 6px rgba(0, 0, 0, 0.22);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .awards-images {
+      justify-content: center;
+    }
+  }
+  

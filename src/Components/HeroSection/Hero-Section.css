@@ -1,0 +1,158 @@
+
+:root {
+  --section-padding: 90px;
+  --hero-padding: 70px;
+  --container-padding: 16px;
+  --font-size-large: 1.3rem;
+  --font-size-small: 1rem;
+  --btn-padding: 16px 32px;
+  --btn-radius: 5px;
+  --max-width-container: 1320px;
+  --color-primary: #0D567E;
+  --color-secondary: #399918;
+  --color-text: #686d76;
+  --color-title: #0d567e;
+}
+
+.section {
+  padding-block: var(--section-padding);
+}
+
+.has-bg-image {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/sultanhospital-e244e.appspot.com/o/backgroung-pattern-1.png?alt=media&token=f6c7221c-d19e-4280-90f4-2270f7a024c8");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.hero {
+  text-align: center;
+}
+
+.container {
+  padding-inline: var(--container-padding);
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--max-width-container);
+}
+
+.hero .container {
+  display: grid;
+  gap: 70px;
+  grid-template-columns: 1fr;
+}
+
+.hero-title {
+  color: var(--color-title);
+}
+
+.hero-text {
+  font-size: var(--font-size-large);
+  color: var(--color-text);
+  margin-block: 24px 36px;
+}
+
+.call_us {
+  display: inline-block;
+  background-color: var(--color-primary);
+  padding: var(--btn-padding);
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: var(--btn-radius);
+  color: #ffffff;
+}
+
+.call_us:hover {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.hero .form-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Media Queries */
+
+@media (min-width: 481px) and (max-width: 575px) {
+  .hero {
+    text-align: left;
+  }
+
+  .hero-text {
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 450px;
+    margin-inline: auto;
+    padding-inline: 14px;
+    justify-content: center;
+  }
+
+  .call_us {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+  .container .form-container {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+  .hero-text {
+    font-size: calc(var(--font-size-large) + 0.2rem);
+  }
+  .hero .form-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+  .hero {
+    padding-block-start: calc(40px + 50px);
+    text-align: left;
+  }
+  .hero .container {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+  .hero-content {
+    max-width: unset;
+    margin-inline: 0;
+    justify-content: center;
+  }
+  .btn-wrapper {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+  .hero-text {
+    padding-inline-end: 100px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+

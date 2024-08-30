@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://sultan-hospital-backend-api.onrender.com'

@@ -1,0 +1,13 @@
+.features-and-departments {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 50px;
+  align-items: center;
+}
+
+@media only screen and (max-width: 600px) {
+  .features-and-departments {
+    display: flex;
+    flex-direction: column;
+  }
+}
