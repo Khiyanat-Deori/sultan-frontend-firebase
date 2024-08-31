@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
 import { db } from "../firebase"; 
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 const timeOptions = [
   { value: "10:00-11:00", label: "10:00 - 11:00" },
@@ -13,7 +13,7 @@ const timeOptions = [
   { value: "15:00-16:00", label: "15:00 - 16:00" },
 ];
 
-const Update = ({ appointmentId}) => {
+const Update = ({ appointmentId }) => {
   const queryClient = useQueryClient();
   const [formValues, setFormValues] = useState({
     patientName: "",
@@ -21,7 +21,6 @@ const Update = ({ appointmentId}) => {
     timeSchedule: "",
     date: "",
   });
-  const [originalDate, setOriginalDate] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -32,14 +31,12 @@ const Update = ({ appointmentId}) => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          const appointmentDate = new Date(data.date.toDate());
           setFormValues({
             patientName: data.patientName,
             phoneNumber: data.phoneNumber,
             timeSchedule: data.timeSchedule,
-            date: appointmentDate.toISOString().split("T")[0],
+            date: data.date,
           });
-          setOriginalDate(appointmentDate);
         } else {
           setFormValues({
             patientName: "",
@@ -95,27 +92,45 @@ const Update = ({ appointmentId}) => {
     setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (originalDate) {
-      const selectedDate = new Date(formValues.date);
-      const updatedDate = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        selectedDate.getDate(),
-        originalDate.getHours(),
-        originalDate.getMinutes(),
-        originalDate.getSeconds(),
-        originalDate.getMilliseconds()
+    const { phoneNumber, date, timeSchedule } = formValues;
+
+    try {
+      const appointmentsRef = collection(db, "appointments");
+      const duplicateQuery = query(
+        appointmentsRef,
+        where("phoneNumber", "==", phoneNumber),
+        where("date", "==", date),
+        where("timeSchedule", "==", timeSchedule)
+      );
+      const querySnapshot = await getDocs(duplicateQuery);
+
+      const isDuplicate = querySnapshot.docs.some(
+        (doc) => doc.id !== appointmentId
       );
 
-      const updatedFormValues = {
-        ...formValues,
-        date: updatedDate,
-      };
+      if (isDuplicate) {
+        toast.error("An appointment with this phone number, date, and time already exists.", {
+          duration: 5000,
+          style: {
+            fontSize: "18px",
+            minWidth: "350px",
+          },
+        });
+        return;
+      }
 
-      updateMutation.mutate(updatedFormValues);
+      updateMutation.mutate(formValues);
+    } catch (error) {
+      toast.error(`Failed to check for duplicate appointments: ${error.message}`, {
+        duration: 5000,
+        style: {
+          fontSize: "18px",
+          minWidth: "350px",
+        },
+      });
     }
   };
 

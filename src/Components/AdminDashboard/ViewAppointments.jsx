@@ -4,18 +4,6 @@ import Delete from "./Delete";
 import { ThreeDots } from "react-loader-spinner";
 
 const ViewAppointments = ({ data, title}) => {
-  const formatDate = (dateString) => {
-    try {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${day}-${month}-${year}`;
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "";
-    }
-  };
 
   if (!data) {
     return (
@@ -52,7 +40,7 @@ const ViewAppointments = ({ data, title}) => {
                 <td className="td-row">{appointment.patientName}</td>
                 <td className="td-row">{appointment.phoneNumber}</td>
                 <td className="td-row">{appointment.timeSchedule}</td>
-                <td className="td-row">{formatDate(appointment.date.toDate())}</td>
+                <td className="td-row">{appointment.date}</td>
                 <td className="td-row">
                   <Update appointmentId={appointment.id} />
                   <Delete appointmentId={appointment.id} />
