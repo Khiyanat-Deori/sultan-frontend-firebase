@@ -71,7 +71,7 @@ const CreateAppointment = () => {
 
     if (phoneNumber.length !== 10 || !/^[9876]/.test(phoneNumber)) {
       toast.error(
-        "Please enter a valid 10 digit phone number starting with 9, 8, 7, or 6",
+        "Please enter a valid 10 digit phone number",
         {
           duration: 5000,
           style: {

@@ -115,7 +115,7 @@ const InputGroup = ({
       </div>
       {type === "tel" && !isPhoneValid && isTouched && (
         <div className="inputGroup-errMsg">
-          Please enter a 10 digit number starting with 9, 8, 7, or 6
+          Please enter a valid 10 digit phone number
         </div>
       )}
     </>

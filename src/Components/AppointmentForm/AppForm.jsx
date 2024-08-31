@@ -122,7 +122,7 @@ const InputGroup = ({
       </InputGroupStyled>
       {type === "tel" && !isPhoneValid && isTouched && (
         <ErrorMessageStyled>
-          Please enter a 10 digit number starting with 9, 8, 7, or 6
+          Please enter a valid 10 digit phone number
         </ErrorMessageStyled>
       )}
     </div>
@@ -187,7 +187,7 @@ const AppForm = () => {
 
     if (phoneNumber.length !== 10 || !/^[9876]/.test(phoneNumber)) {
       toast.error(
-        "Please enter a valid 10 digit phone number starting with 9, 8, 7, or 6",
+        "Please enter a valid 10 digit phone number",
         {
           duration: 5000,
           style: {

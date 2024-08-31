@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { db, auth } from "../firebase"; 
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { Toaster } from "react-hot-toast";
 import ViewAppointments from "./ViewAppointments";
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
     const appointmentsRef = collection(db, "appointments");
 
     // Real-time listener for total appointments
-    const totalUnsubscribe = onSnapshot(query(appointmentsRef), (snapshot) => {
+    const totalUnsubscribe = onSnapshot(query(appointmentsRef, orderBy("date", "desc")), (snapshot) => {
       const totalAppointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setTotalAppointments(totalAppointmentsData);
       setLoading(false);
