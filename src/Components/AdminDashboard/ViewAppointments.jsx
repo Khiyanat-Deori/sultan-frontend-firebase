@@ -1,37 +1,9 @@
 import React from "react";
-import { useQuery } from "react-query";
 import Update from "./Update";
 import Delete from "./Delete";
-import useAxiosInterceptor from "../../hooks/useAxiosInterceptor";
 import { ThreeDots } from "react-loader-spinner";
 
-const fetchAppointments = async (axiosPrivate, url) => {
-  const { data } = await axiosPrivate.get(url);
-  return data;
-};
-
-const ViewAppointments = ({ url, title }) => {
-  const { axiosPrivate } = useAxiosInterceptor();
-
-  const { data, error, isLoading, refetch } = useQuery(
-    ["appointments", url],
-    () => fetchAppointments(axiosPrivate, url),
-  );
-
-  if (isLoading) {
-    return (
-      <div className="loading-spinner-container">
-        <ThreeDots 
-          height="80" 
-          width="80" 
-          color="#2c3e50" 
-          ariaLabel="loading"
-        />
-      </div>
-    );
-  }
-  if (error) return <div>Error: {error.message}</div>;
-
+const ViewAppointments = ({ data, title, refetch }) => {
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -44,6 +16,19 @@ const ViewAppointments = ({ url, title }) => {
       return "";
     }
   };
+
+  if (!data) {
+    return (
+      <div className="loading-spinner-container">
+        <ThreeDots 
+          height="80" 
+          width="80" 
+          color="#2c3e50" 
+          ariaLabel="loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="tomorrow-apt__container">
@@ -67,10 +52,10 @@ const ViewAppointments = ({ url, title }) => {
                 <td className="td-row">{appointment.patientName}</td>
                 <td className="td-row">{appointment.phoneNumber}</td>
                 <td className="td-row">{appointment.timeSchedule}</td>
-                <td className="td-row">{formatDate(appointment.date)}</td>
+                <td className="td-row">{formatDate(appointment.date.toDate())}</td>
                 <td className="td-row">
-                  <Update appointmentId={appointment._id} refetch={refetch} />
-                  <Delete appointmentId={appointment._id} refetch={refetch} />
+                  <Update appointmentId={appointment.id} refetch={refetch} />
+                  <Delete appointmentId={appointment.id} refetch={refetch} />
                 </td>
               </tr>
             ))}
@@ -82,5 +67,4 @@ const ViewAppointments = ({ url, title }) => {
 };
 
 export default ViewAppointments;
-
 

@@ -1,81 +1,114 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import useAxiosInterceptor from "../../hooks/useAxiosInterceptor";
-import ViewAppointments from "./ViewAppointments";
-import useAuth from "../../hooks/useAuth";
-import axios from "axios";
-import { BASE_URL } from "../../BaseUrl";
-import { useQuery} from "react-query";
+import { db, auth } from "../firebase"; 
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { Toaster } from "react-hot-toast";
-
-
-const fetchCount = async (axiosPrivate, url) => {
-  try {
-    const response = await axiosPrivate.get(url);
-    return response.data;
-  } catch (error) {
-    throw new Error("Error fetching appointments");
-  }
-};
+import ViewAppointments from "./ViewAppointments";
+import { ThreeDots } from "react-loader-spinner"; 
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { axiosPrivate } = useAxiosInterceptor();
   const [view, setView] = useState("total");
-  const { setAuth } = useAuth();
+  const [totalAppointments, setTotalAppointments] = useState([]);
+  const [todaysAppointments, setTodaysAppointments] = useState([]);
+  const [tomorrowsAppointments, setTomorrowsAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await axiosPrivate.get(`${BASE_URL}/api/admin/adminDashboard`);
-      } catch (error) {
-        if (error.response?.status === 401) {
+    const checkAuth = () => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (!user) {
           navigate("/login");
         }
+      });
+
+      return () => unsubscribe();
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setLoading(true);
+      try {
+          const today = new Date();
+          const tomorrow = new Date();
+          tomorrow.setDate(today.getDate() + 1);
+
+          const appointmentsRef = collection(db, "appointments");
+
+          // Fetch total appointments
+          const totalSnapshot = await getDocs(query(appointmentsRef));
+          const totalAppointmentsData = totalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setTotalAppointments(totalAppointmentsData);
+
+          // Fetch today's appointments
+          const todaysSnapshot = await getDocs(query(
+            appointmentsRef,
+            where("date", "==", today.toISOString().split('T')[0])
+          ));
+          const todaysAppointmentsData = todaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setTodaysAppointments(todaysAppointmentsData);
+
+          // Fetch tomorrow's appointments
+          const tomorrowsSnapshot = await getDocs(query(
+            appointmentsRef,
+            where("date", "==", tomorrow.toISOString().split('T')[0])
+          ));
+          const tomorrowsAppointmentsData = tomorrowsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setTomorrowsAppointments(tomorrowsAppointmentsData);
+
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching data");
+        setLoading(false);
+        console.error("Failed to fetch appointments", error);
       }
     };
-    checkAuth();
-  }, [axiosPrivate, navigate]);
 
-  const { data: totalAppointments, error: totalAppointmentsError } = useQuery(
-    "totalAppointments",
-    () => fetchCount(axiosPrivate, `${BASE_URL}/api/form/view`)
-  );
-
-  const { data: todaysAppointments, error: todaysAppointmentsError } = useQuery(
-    "todaysAppointments",
-    () => fetchCount(axiosPrivate, `${BASE_URL}/api/form/todays-appointments`)
-  );
-
-  if (totalAppointmentsError || todaysAppointmentsError) {
-    return <div>Error loading data</div>;
-  }
+    fetchAppointments();
+  }, []);
 
   const handleViewChange = (newView) => {
     setView(newView);
   };
 
-  const todaysAppointmentsCount = (todaysAppointments && todaysAppointments.length) || 0;
-  const totalAppointmentsCount = (totalAppointments && totalAppointments.length) || 0;
-
   const handleLogout = async () => {
     try {
-      await axios.post(
-        `${BASE_URL}/api/admin/logout`,
-        {},
-        { withCredentials: true }
-      );
-      setAuth({});
-      localStorage.removeItem("accessToken");
+      await signOut(auth);
       navigate("/login");
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="loading-spinner-container">
+        <ThreeDots 
+          height="80" 
+          width="80" 
+          color="#2c3e50" 
+          ariaLabel="loading"
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  const todaysAppointmentsCount = todaysAppointments.length || 0;
+  const tomorrowsAppointmentsCount = tomorrowsAppointments.length || 0;
+  const totalAppointmentsCount = totalAppointments.length || 0;
+
   return (
     <>
-    <Toaster />
+      <Toaster />
       <section className="dashboard-container">
         <header className="dashboard-header">
           <div className="dashboard-logo">
@@ -100,15 +133,15 @@ const AdminDashboard = () => {
               <div className="card__count">{todaysAppointmentsCount}</div>
             </div>
             <div className="card__description">
-              <b>Appointments Today</b>{" "}
+              <b>Appointments Today</b>
             </div>
           </div>
           <div className="dash_card" onClick={() => handleViewChange("tomorrows")}>
             <div className="card__content">
-              <div className="card__count">View</div>
+              <div className="card__count">{tomorrowsAppointmentsCount}</div>
             </div>
             <div className="card__description">
-              <b>Appointments Tomorrow</b>{" "}
+              <b>Appointments Tomorrow</b>
             </div>
           </div>
           <div className="dash_card" onClick={() => handleViewChange("total")}>
@@ -116,7 +149,7 @@ const AdminDashboard = () => {
               <div className="card__count">{totalAppointmentsCount}</div>
             </div>
             <div className="card__description">
-              <b>Total Appointments</b>{" "}
+              <b>Total Appointments</b>
             </div>
           </div>
           <div className="dash_card" onClick={() => navigate("/create")}>
@@ -124,26 +157,26 @@ const AdminDashboard = () => {
               <div className="card__count">Create</div>
             </div>
             <div className="card__description">
-              <b>Appointment</b>{" "}
+              <b>Appointment</b>
             </div>
           </div>
         </div>
       </section>
       {view === "total" && (
         <ViewAppointments
-          url={`${BASE_URL}/api/form/view`}
+          data={totalAppointments}
           title="Total Appointments"
         />
       )}
       {view === "todays" && (
         <ViewAppointments
-          url={`${BASE_URL}/api/form/todays-appointments`}
+          data={todaysAppointments}
           title="Today's Appointments"
         />
       )}
       {view === "tomorrows" && (
         <ViewAppointments
-          url={`${BASE_URL}/api/form/tomorrows-appointments`}
+          data={tomorrowsAppointments}
           title="Tomorrow's Appointments"
         />
       )}
@@ -153,17 +186,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-

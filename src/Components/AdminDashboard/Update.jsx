@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
-import useAxiosInterceptor from "../../hooks/useAxiosInterceptor";
-import { BASE_URL } from "../../BaseUrl";
+import { db } from "../firebase"; 
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const timeOptions = [
   { value: "10:00-11:00", label: "10:00 - 11:00" },
@@ -14,7 +14,6 @@ const timeOptions = [
 ];
 
 const Update = ({ appointmentId, refetch }) => {
-  const { axiosPrivate } = useAxiosInterceptor();
   const queryClient = useQueryClient();
   const [formValues, setFormValues] = useState({
     patientName: "",
@@ -24,22 +23,24 @@ const Update = ({ appointmentId, refetch }) => {
   });
   const [originalDate, setOriginalDate] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [fetchId, setFetchId] = useState(null); // State to track if fetch should happen
 
   useEffect(() => {
     const fetchAppointment = async () => {
       try {
-        const { data } = await axiosPrivate.get(`${BASE_URL}/api/form/view/${fetchId}`);
-        const appointmentDate = new Date(data.date);
-        setFormValues({
-          patientName: data.patientName,
-          phoneNumber: data.phoneNumber,
-          timeSchedule: data.timeSchedule,
-          date: appointmentDate.toISOString().split("T")[0],
-        });
-        setOriginalDate(appointmentDate);
-      } catch (error) {
-        if (error.response?.status === 404) {
+        const docRef = doc(db, "appointments", appointmentId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const appointmentDate = new Date(data.date.toDate());
+          setFormValues({
+            patientName: data.patientName,
+            phoneNumber: data.phoneNumber,
+            timeSchedule: data.timeSchedule,
+            date: appointmentDate.toISOString().split("T")[0],
+          });
+          setOriginalDate(appointmentDate);
+        } else {
           setFormValues({
             patientName: "",
             phoneNumber: "",
@@ -47,20 +48,21 @@ const Update = ({ appointmentId, refetch }) => {
             date: "",
           });
           setShowForm(false);
-        } else {
-          toast.error(`Error fetching appointment: ${error.response?.data?.message || error.message}`);
         }
+      } catch (error) {
+        toast.error(`Error fetching appointment: ${error.message}`);
       }
     };
 
-    if (fetchId) {
+    if (appointmentId) {
       fetchAppointment();
     }
-  }, [fetchId, axiosPrivate]);
+  }, [appointmentId]);
 
   const updateMutation = useMutation(
     async (updatedFormValues) => {
-      await axiosPrivate.put(`${BASE_URL}/api/form/update/${appointmentId}`, updatedFormValues);
+      const docRef = doc(db, "appointments", appointmentId);
+      await updateDoc(docRef, updatedFormValues);
     },
     {
       onSuccess: () => {
@@ -78,7 +80,7 @@ const Update = ({ appointmentId, refetch }) => {
         setShowForm(false);
       },
       onError: (error) => {
-        toast.error(`Error: ${error.response?.data?.message || error.message}`, {
+        toast.error(`Error: ${error.message}`, {
           duration: 2000,
           style: {
             fontSize: "18px",
@@ -119,7 +121,6 @@ const Update = ({ appointmentId, refetch }) => {
   };
 
   const handleEditClick = () => {
-    setFetchId(appointmentId); // Set fetchId to trigger the useEffect
     setShowForm(true);
   };
 
