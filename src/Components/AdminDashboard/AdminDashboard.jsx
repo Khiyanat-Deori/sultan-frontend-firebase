@@ -1,7 +1,7 @@
 // import React, { useState, useEffect } from "react";
 // import { useNavigate, Outlet } from "react-router-dom";
 // import { db, auth } from "../firebase"; 
-// import { collection, query, where, getDocs } from "firebase/firestore";
+// import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
 // import { signOut, onAuthStateChanged } from "firebase/auth";
 // import { Toaster } from "react-hot-toast";
 // import ViewAppointments from "./ViewAppointments";
@@ -34,32 +34,42 @@
 //     const fetchAppointments = async () => {
 //       setLoading(true);
 //       try {
-//           const today = new Date();
-//           const tomorrow = new Date();
-//           tomorrow.setDate(today.getDate() + 1);
+//         const today = new Date();
+//         const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+//         const endOfToday = new Date(today.setHours(23, 59, 59, 999));
 
-//           const appointmentsRef = collection(db, "appointments");
+//         const tomorrow = new Date();
+//         tomorrow.setDate(tomorrow.getDate() + 1);
+//         const startOfTomorrow = new Date(tomorrow.setHours(0, 0, 0, 0));
+//         const endOfTomorrow = new Date(tomorrow.setHours(23, 59, 59, 999));
 
-//           // Fetch total appointments
-//           const totalSnapshot = await getDocs(query(appointmentsRef));
-//           const totalAppointmentsData = totalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-//           setTotalAppointments(totalAppointmentsData);
+//         const appointmentsRef = collection(db, "appointments");
 
-//           // Fetch today's appointments
-//           const todaysSnapshot = await getDocs(query(
-//             appointmentsRef,
-//             where("date", "==", today.toISOString().split('T')[0])
-//           ));
-//           const todaysAppointmentsData = todaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-//           setTodaysAppointments(todaysAppointmentsData);
+//         // Fetch total appointments
+//         const totalSnapshot = await getDocs(query(appointmentsRef));
+//         const totalAppointmentsData = totalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+//         console.log('Total Appointments:', totalAppointmentsData); // Debug log
+//         setTotalAppointments(totalAppointmentsData);
 
-//           // Fetch tomorrow's appointments
-//           const tomorrowsSnapshot = await getDocs(query(
-//             appointmentsRef,
-//             where("date", "==", tomorrow.toISOString().split('T')[0])
-//           ));
-//           const tomorrowsAppointmentsData = tomorrowsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-//           setTomorrowsAppointments(tomorrowsAppointmentsData);
+//         // Fetch today's appointments
+//         const todaysSnapshot = await getDocs(query(
+//           appointmentsRef,
+//           where("date", ">=", Timestamp.fromDate(startOfToday)),
+//           where("date", "<=", Timestamp.fromDate(endOfToday))
+//         ));
+//         const todaysAppointmentsData = todaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+//         console.log('Today\'s Appointments:', todaysAppointmentsData); // Debug log
+//         setTodaysAppointments(todaysAppointmentsData);
+
+//         // Fetch tomorrow's appointments
+//         const tomorrowsSnapshot = await getDocs(query(
+//           appointmentsRef,
+//           where("date", ">=", Timestamp.fromDate(startOfTomorrow)),
+//           where("date", "<=", Timestamp.fromDate(endOfTomorrow))
+//         ));
+//         const tomorrowsAppointmentsData = tomorrowsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+//         console.log('Tomorrow\'s Appointments:', tomorrowsAppointmentsData); // Debug log
+//         setTomorrowsAppointments(tomorrowsAppointmentsData);
 
 //         setLoading(false);
 //       } catch (error) {
@@ -187,11 +197,10 @@
 
 // export default AdminDashboard;
 
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { db, auth } from "../firebase"; 
-import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
+import { collection, query, where, onSnapshot, Timestamp } from "firebase/firestore";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { Toaster } from "react-hot-toast";
 import ViewAppointments from "./ViewAppointments";
@@ -221,55 +230,61 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      setLoading(true);
-      try {
-        const today = new Date();
-        const startOfToday = new Date(today.setHours(0, 0, 0, 0));
-        const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+    setLoading(true);
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999));
 
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const startOfTomorrow = new Date(tomorrow.setHours(0, 0, 0, 0));
-        const endOfTomorrow = new Date(tomorrow.setHours(23, 59, 59, 999));
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const startOfTomorrow = new Date(tomorrow.setHours(0, 0, 0, 0));
+    const endOfTomorrow = new Date(tomorrow.setHours(23, 59, 59, 999));
 
-        const appointmentsRef = collection(db, "appointments");
+    const appointmentsRef = collection(db, "appointments");
 
-        // Fetch total appointments
-        const totalSnapshot = await getDocs(query(appointmentsRef));
-        const totalAppointmentsData = totalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('Total Appointments:', totalAppointmentsData); // Debug log
-        setTotalAppointments(totalAppointmentsData);
+    // Real-time listener for total appointments
+    const totalUnsubscribe = onSnapshot(query(appointmentsRef), (snapshot) => {
+      const totalAppointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTotalAppointments(totalAppointmentsData);
+      setLoading(false);
+    }, (error) => {
+      console.error("Failed to fetch total appointments", error);
+      setError("Error fetching data");
+      setLoading(false);
+    });
 
-        // Fetch today's appointments
-        const todaysSnapshot = await getDocs(query(
-          appointmentsRef,
-          where("date", ">=", Timestamp.fromDate(startOfToday)),
-          where("date", "<=", Timestamp.fromDate(endOfToday))
-        ));
-        const todaysAppointmentsData = todaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('Today\'s Appointments:', todaysAppointmentsData); // Debug log
-        setTodaysAppointments(todaysAppointmentsData);
+    // Real-time listener for today's appointments
+    const todaysUnsubscribe = onSnapshot(query(
+      appointmentsRef,
+      where("date", ">=", Timestamp.fromDate(startOfToday)),
+      where("date", "<=", Timestamp.fromDate(endOfToday))
+    ), (snapshot) => {
+      const todaysAppointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTodaysAppointments(todaysAppointmentsData);
+    }, (error) => {
+      console.error("Failed to fetch today's appointments", error);
+      setError("Error fetching data");
+    });
 
-        // Fetch tomorrow's appointments
-        const tomorrowsSnapshot = await getDocs(query(
-          appointmentsRef,
-          where("date", ">=", Timestamp.fromDate(startOfTomorrow)),
-          where("date", "<=", Timestamp.fromDate(endOfTomorrow))
-        ));
-        const tomorrowsAppointmentsData = tomorrowsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log('Tomorrow\'s Appointments:', tomorrowsAppointmentsData); // Debug log
-        setTomorrowsAppointments(tomorrowsAppointmentsData);
+    // Real-time listener for tomorrow's appointments
+    const tomorrowsUnsubscribe = onSnapshot(query(
+      appointmentsRef,
+      where("date", ">=", Timestamp.fromDate(startOfTomorrow)),
+      where("date", "<=", Timestamp.fromDate(endOfTomorrow))
+    ), (snapshot) => {
+      const tomorrowsAppointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTomorrowsAppointments(tomorrowsAppointmentsData);
+    }, (error) => {
+      console.error("Failed to fetch tomorrow's appointments", error);
+      setError("Error fetching data");
+    });
 
-        setLoading(false);
-      } catch (error) {
-        setError("Error fetching data");
-        setLoading(false);
-        console.error("Failed to fetch appointments", error);
-      }
+    // Cleanup listeners on component unmount
+    return () => {
+      totalUnsubscribe();
+      todaysUnsubscribe();
+      tomorrowsUnsubscribe();
     };
-
-    fetchAppointments();
   }, []);
 
   const handleViewChange = (newView) => {

@@ -13,7 +13,7 @@ const timeOptions = [
   { value: "15:00-16:00", label: "15:00 - 16:00" },
 ];
 
-const Update = ({ appointmentId, refetch }) => {
+const Update = ({ appointmentId}) => {
   const queryClient = useQueryClient();
   const [formValues, setFormValues] = useState({
     patientName: "",
@@ -76,7 +76,6 @@ const Update = ({ appointmentId, refetch }) => {
         queryClient.invalidateQueries("totalAppointments");
         queryClient.invalidateQueries("todaysAppointments");
         queryClient.invalidateQueries("tomorrowsAppointments");
-        refetch();
         setShowForm(false);
       },
       onError: (error) => {

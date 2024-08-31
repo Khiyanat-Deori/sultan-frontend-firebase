@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import { doc, deleteDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
-const Delete = ({ appointmentId, refetch }) => {
+const Delete = ({ appointmentId}) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation(
@@ -24,7 +24,6 @@ const Delete = ({ appointmentId, refetch }) => {
         queryClient.invalidateQueries("totalAppointments");
         queryClient.invalidateQueries("todaysAppointments");
         queryClient.invalidateQueries("tomorrowsAppointments");
-        refetch();
       },
       onError: (error) => {
         toast.error(`Error: ${error.message}`, {

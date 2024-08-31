@@ -3,7 +3,7 @@ import Update from "./Update";
 import Delete from "./Delete";
 import { ThreeDots } from "react-loader-spinner";
 
-const ViewAppointments = ({ data, title, refetch }) => {
+const ViewAppointments = ({ data, title}) => {
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -54,8 +54,8 @@ const ViewAppointments = ({ data, title, refetch }) => {
                 <td className="td-row">{appointment.timeSchedule}</td>
                 <td className="td-row">{formatDate(appointment.date.toDate())}</td>
                 <td className="td-row">
-                  <Update appointmentId={appointment.id} refetch={refetch} />
-                  <Delete appointmentId={appointment.id} refetch={refetch} />
+                  <Update appointmentId={appointment.id} />
+                  <Delete appointmentId={appointment.id} />
                 </td>
               </tr>
             ))}
