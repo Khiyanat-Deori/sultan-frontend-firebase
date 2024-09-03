@@ -33,7 +33,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     setLoading(true);
     
-    // Getting today's date and tomorrow's date in "YYYY-MM-DD" format
     const today = new Date();
     const todayString = today.toISOString().split("T")[0];
 
@@ -43,7 +42,6 @@ const AdminDashboard = () => {
 
     const appointmentsRef = collection(db, "appointments");
 
-    // Real-time listener for total appointments
     const totalUnsubscribe = onSnapshot(query(appointmentsRef, orderBy("date", "desc")), (snapshot) => {
       const totalAppointmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setTotalAppointments(totalAppointmentsData);
@@ -54,7 +52,6 @@ const AdminDashboard = () => {
       setLoading(false);
     });
 
-    // Real-time listener for today's appointments
     const todaysUnsubscribe = onSnapshot(query(
       appointmentsRef,
       where("date", "==", todayString)
@@ -66,7 +63,6 @@ const AdminDashboard = () => {
       setError("Error fetching data");
     });
 
-    // Real-time listener for tomorrow's appointments
     const tomorrowsUnsubscribe = onSnapshot(query(
       appointmentsRef,
       where("date", "==", tomorrowString)
@@ -78,7 +74,6 @@ const AdminDashboard = () => {
       setError("Error fetching data");
     });
 
-    // Cleanup listeners on component unmount
     return () => {
       totalUnsubscribe();
       todaysUnsubscribe();

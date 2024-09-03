@@ -1,5 +1,5 @@
 import React from 'react';
-import './aboutUs.css'; // Import the CSS file
+import './aboutUs.css'; 
 import Navbar from './Navbar/Navbar';
 import Footer from './Footer/Footer';
 

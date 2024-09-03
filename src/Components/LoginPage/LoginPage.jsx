@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ThreeDots } from "react-loader-spinner";
-import { auth } from "../firebase"; // Import auth from firebase.js
+import { auth } from "../firebase"; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

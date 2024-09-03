@@ -18,18 +18,19 @@ export const AppointmentFormStyled = styled.form`
   font-weight: 400;
   padding: 30px 60px;
 
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    max-width: 450px; /* Slightly larger for small screens */
-    padding: 25px 50px; /* Reduce padding a bit */
-    font-size: 14px; /* Slightly smaller font */
-  }
 
   @media (max-width: 480px) {
-    max-width: 420px; /* Further increase size for smaller screens */
-    padding: 20px 42px; /* Adjust padding accordingly */
-    font-size: 14px; /* Reduce font size */
+    max-width: 420px; 
+    padding: 25px 60px; 
+    font-size: 14px; 
   }
+
+  @media (max-width: 380px) {
+    max-width: 420px; 
+    padding: 25px 42px; 
+    font-size: 14px; 
+  }
+  
 `;
 
 export const InputGroupStyled = styled.div`
@@ -71,7 +72,6 @@ export const InputLabelStyled = styled.input`
     border-bottom-color: #ce4141;
   }
 
-  /* Responsive adjustments */
   @media (max-width: 480px) {
     font-size: 14px;
   }
@@ -100,7 +100,7 @@ export const SubmitButtonStyled = styled.button`
 
   font-family: Open Sans, sans-serif;
 
-  /* Responsive adjustments */
+  
   @media (max-width: 480px) {
     font-size: 14px;
     padding: 10px 16px;
@@ -124,7 +124,6 @@ export const SelectStyled = styled.select`
     border-bottom-color: #ce4141;
   }
 
-  /* Responsive adjustments */
   @media (max-width: 480px) {
     font-size: 14px;
   }
@@ -151,7 +150,6 @@ export const CustomDatePicker = styled(DatePicker)`
     border-bottom-color: #ce4141;
   }
 
-  /* Responsive adjustments */
   @media (max-width: 480px) {
     font-size: 14px;
   }
@@ -164,7 +162,6 @@ export const ErrorMessageStyled = styled.div`
   margin-top: 5px;
   margin-bottom: 10px;
 
-  /* Responsive adjustments */
   @media (max-width: 480px) {
     margin-left: 30px;
     font-size: 11px;

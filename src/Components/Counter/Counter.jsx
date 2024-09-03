@@ -14,7 +14,7 @@ function CountNumber({ target }) {
         }
       },
       {
-        threshold: 1.0, // Trigger when 100% of the element is visible
+        threshold: 1.0, 
       }
     );
 
@@ -33,10 +33,10 @@ function CountNumber({ target }) {
 
   useEffect(() => {
     if (isVisible) {
-      const duration = 1000; // 1 second
-      const steps = 100; // Number of steps for smoother animation
-      const delay = duration / steps; // Delay between each step
-      const increment = target / steps; // Increment per step
+      const duration = 1000; 
+      const steps = 100; 
+      const delay = duration / steps; 
+      const increment = target / steps; 
 
       let currentStep = 0;
 

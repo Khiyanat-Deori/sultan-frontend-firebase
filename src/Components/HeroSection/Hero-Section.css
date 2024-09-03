@@ -79,7 +79,6 @@
   gap: 8px;
 }
 
-/* Media Queries */
 
 @media (min-width: 481px) and (max-width: 575px) {
   .hero {

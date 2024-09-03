@@ -125,21 +125,20 @@
   color: #365486;
 }
 
-/* Responsive layout */
 @media (min-width: 1024px) {
   .parents {
-    flex: 1 1 calc(25% - 20px); /* Four cards per row */
+    flex: 1 1 calc(25% - 20px); 
   }
 }
 
 @media (max-width: 1024px) and (min-width: 768px) {
   .parents {
-    flex: 1 1 calc(50% - 20px); /* Two cards per row */
+    flex: 1 1 calc(50% - 20px); 
   }
 }
 
 @media (max-width: 768px) {
   .parents {
-    flex: 1 1 calc(100% - 20px); /* One card per row */
+    flex: 1 1 calc(100% - 20px); 
   }
 }

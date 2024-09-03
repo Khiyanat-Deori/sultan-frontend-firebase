@@ -7,14 +7,14 @@
 
 .footer-top {
   display: flex;
-  justify-content: space-between; /* Aligns items to the edges */
-  align-items: flex-start; /* Ensures vertical alignment at the start */
+  justify-content: space-between; 
+  align-items: flex-start; 
 }
 
 .footer-left,
 .footer-right {
-  flex: 1; /* Makes both sections take up equal space */
-  margin: 0 10px; /* Optional: adjust space between sections if needed */
+  flex: 1;
+  margin: 0 10px;
 }
 
 .quicklink-logo {
@@ -60,9 +60,6 @@
   font-size: 14px;
 }
 
-/* Media Queries */
-
-/* Adjust for tablets (screens <= 768px) */
 @media (max-width: 768px) {
   .footer-top {
     flex-direction: column;
@@ -85,7 +82,6 @@
   }
 }
 
-/* Adjust for mobile devices (screens <= 480px) */
 @media (max-width: 480px) {
   .quicklink-logo {
     width: 80px;

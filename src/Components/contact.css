@@ -41,7 +41,6 @@
   text-decoration: underline;
 }
 
-/* Responsive Styles */
 @media (max-width: 768px) {
   .contact-container {
     padding: 10px;

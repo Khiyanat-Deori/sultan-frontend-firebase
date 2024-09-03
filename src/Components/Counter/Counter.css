@@ -1,8 +1,7 @@
 .counter-container {
-  display: flex; /* Use Flexbox for easy responsiveness */
-  /* Allow items to wrap to new lines */
-  justify-content: center; /* Center items horizontally */
-  gap: 20px; /* Space between counters */
+  display: flex; 
+  justify-content: center; 
+  gap: 20px; 
   padding: 20px;
   flex-direction: row;
   align-items: center;
@@ -10,51 +9,48 @@
 }
 
 .counter {
-  text-align: center; /* Center content within each counter */
-  flex: 1; /* Allow counters to grow/shrink evenly */
-  min-width: 200px; /* Minimum width for each counter */
+  text-align: center; 
+  flex: 1; 
+  min-width: 200px; 
   padding: 20px;
-  border-radius: 8px; /* Round the corners slightly */
+  border-radius: 8px; 
   color: aliceblue;
   background: linear-gradient(
-    135deg,          /* Angle for gradient */
-    #e0f7fa 0%,      /* Very light cyan-blue at the start */
-    #0d567e 50%,     /* Your chosen blue color at the midpoint */
-    #003f5c 100%     /* Darker blue at the end */
+    135deg,          
+    #e0f7fa 0%,      
+    #0d567e 50%,     
+    #003f5c 100%    
   );
 }
 
 .count {
-  font-size: 2.5rem; /* Make the count number larger */
+  font-size: 2.5rem; 
   margin-bottom: 10px;
   color:aliceblue;
 }
 @media (min-width: 769px) {
-  /* For PC screens */
   .counter-container {
-    padding: 20px 40px; /* Increase left and right padding for larger screens */
+    padding: 20px 40px; 
   }
 }
 @media (max-width: 768px) {
-  /* Tablet and smaller screens */
   .counter-container {
-    flex-direction: column; /* Stack counters vertically on smaller screens */
+    flex-direction: column; 
     align-items: center;
   }
 
   .counter {
-    min-width: 90%; /* Adjust minimum width for smaller screens */
+    min-width: 90%; 
     margin-bottom: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  /* Mobile phones */
   .count {
-    font-size: 2rem; /* Further adjust font size for mobile */
+    font-size: 2rem; 
   }
 
   .counter-container {
-    gap: 10px; /* Smaller gap between counters on mobile */
+    gap: 10px; 
   }
 }
