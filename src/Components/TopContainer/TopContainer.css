@@ -55,6 +55,11 @@
       flex-direction: column;
       padding: 40px; 
     }
+    .child {
+      max-width: 100%; 
+      min-width: 240px; 
+      min-height: 220px; 
+    }
   }
   
   @media (min-width: 577px) and (max-width: 768px) {
@@ -70,4 +75,6 @@
       padding: 40px;
     }
   }
+
+  
   
