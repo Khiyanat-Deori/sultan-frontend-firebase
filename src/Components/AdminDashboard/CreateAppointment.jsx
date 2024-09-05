@@ -13,7 +13,7 @@ const CreateAppointment = () => {
   const initialFormValues = {
     fullName: "",
     phoneNumber: "",
-    appointmentDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    appointmentDate: new Date(new Date().getTime()),
     appointmentTime: "",
   };
 
@@ -83,7 +83,7 @@ const CreateAppointment = () => {
       return;
     }
 
-    const istDate = new Date(appointmentDate.getTime() + 5.5 * 60 * 60 * 1000);
+    const istDate = new Date(appointmentDate.getTime());
     const formattedDate = istDate.toISOString().split("T")[0]; 
 
   
